@@ -17,6 +17,9 @@ void main()
     void create_list(int);
     void display_list(int);
     void create_sorted_list(int);
+    void bubble_sort(int);
+    void merge_lists();
+    void split_lists();
 
     printf("Would you like to work with two lists?(y/n): ");
     scanf("%c", &option);
@@ -29,7 +32,7 @@ void main()
         printf("\n2 to create sorted list/s");
         printf("\n3 to display the list/s");
         printf("\n4 to bubble sort the list/s");
-        printf("\n5 to merge the lists");
+        printf("\n5 to merge the sorted lists");
         printf("\n6 to split the list(Odd & Even wise)\n");
 
         scanf("%d", &choice);
@@ -75,6 +78,24 @@ void main()
                 display_list(i);
             }
             break;
+
+        case 4:
+            for (i = 0; i < 3; i++)
+            {
+                bubble_sort(i);
+            }
+            break;
+
+        case 5:
+            merge_lists();
+            break;
+
+        case 6:
+            split_lists();
+            break;
+
+        default:
+            printf("Sorry fam try again");
         }
     }
 }
@@ -166,4 +187,104 @@ void display_list(int r)
         temp = temp->next;
     }
     printf("NULL\n");
+}
+
+void bubble_sort(int r)
+{
+    struct node *temp[2];
+    int v_temp;
+    if (head[r] == NULL)
+    {
+        return;
+    }
+    for (temp[0] = head[r]; temp[0]->next != NULL; temp[0] = temp[0]->next)
+    {
+        for (temp[1] = head[r]; temp[1]->next != NULL; temp[1] = temp[1]->next)
+        {
+            if (temp[1]->val > temp[1]->next->val)
+            {
+                v_temp = temp[1]->val;
+                temp[1]->val = temp[1]->next->val;
+                temp[1]->next->val = v_temp;
+            }
+        }
+    }
+}
+
+void merge_lists()
+{
+    struct node *temp[2];
+    for (temp[0] = head[0], temp[1] = head[1]; temp[0] != NULL && temp[1] != NULL;)
+    {
+        if (temp[0]->val < temp[1]->val)
+        {
+            if (head[2] == NULL)
+            {
+                head[2] = temp[0];
+            }
+            else
+            {
+                last[2]->next = temp[0];
+            }
+            last[2] = temp[0];
+            temp[0] = temp[0]->next;
+        }
+        else
+        {
+            if (head[2] == NULL)
+            {
+                head[2] = temp[1];
+            }
+            else
+            {
+                last[2]->next = temp[1];
+            }
+            last[2] = temp[1];
+            temp[1] = temp[1]->next;
+        }
+    }
+    if (temp[0] != NULL)
+    {
+        last[2]->next = temp[0];
+        last[2] = last[0];
+    }
+    if (temp[1] != NULL)
+    {
+        last[2]->next = temp[1];
+        last[2] = last[1];
+    }
+}
+
+void split_lists()
+{
+    struct node *temp;
+    for (temp = head[0]; temp != NULL; temp = temp->next)
+    {
+        if (temp->val % 2 != 0)
+        {
+            if (head[1] == NULL)
+            {
+                head[1] = temp;
+            }
+            else
+            {
+                last[1]->next = temp;
+            }
+            last[1] = temp;
+        }
+        else
+        {
+            if (head[2] == NULL)
+            {
+                head[2] = temp;
+            }
+            else
+            {
+                last[2]->next = temp;
+            }
+            last[2] = temp;
+        }
+    }
+    last[1]->next = NULL;
+    last[2]->next = NULL;
 }
