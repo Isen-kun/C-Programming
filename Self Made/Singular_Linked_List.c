@@ -17,6 +17,9 @@ void main()
     void display_list();
     void add_after();
     void add_before();
+    void del_node_val();
+    void del_node_pos();
+    void display_rev(struct node *);
 
     while (1)
     {
@@ -25,7 +28,11 @@ void main()
         printf("\n1 to create the list");
         printf("\n2 to display the list");
         printf("\n3 to add node after a specific node");
-        printf("\n4 to add node before a specific node\n");
+        printf("\n4 to add node before a specific node");
+        printf("\n5 to delete a node with specific value");
+        printf("\n6 to delete a node from a specific position");
+        printf("\n7 to display the list in reverse\n");
+
         scanf("%d", &choice);
 
         switch (choice)
@@ -48,6 +55,19 @@ void main()
 
         case 4:
             add_before();
+            break;
+
+        case 5:
+            del_node_val();
+            break;
+
+        case 6:
+            del_node_pos();
+            break;
+
+        case 7:
+            display_rev(head);
+            printf("\n");
             break;
 
         default:
@@ -137,7 +157,7 @@ void add_before()
     new = create_node(v);
     if (head->val == x)
     {
-        new->next = head->next;
+        new->next = head;
         head = new;
         return;
     }
@@ -152,4 +172,60 @@ void add_before()
         temp = temp->next;
     }
     printf("Element not found.");
+}
+
+//felt like doing with for loop from here
+
+void del_node_val()
+{
+    int x;
+    struct node *temp;
+    printf("Enter the value of the node to be deleted: ");
+    scanf("%d", &x);
+    if (head->val == x)
+    {
+        head = head->next;
+        return;
+    }
+    for (temp = head; temp->next != NULL; temp = temp->next)
+    {
+        if (temp->next->val == x)
+        {
+            temp->next = temp->next->next; //isn't working with last node
+            // return;                     //works with this but then will only delete the first node it will match.
+        }
+    }
+}
+
+void del_node_pos()
+{
+    int p, i = 1;
+    struct node *temp;
+    printf("Enter the position of the node to be deleted: ");
+    scanf("%d", &p);
+    if (p == 1)
+    {
+        head = head->next;
+        return;
+    }
+    for (temp = head; i < p; i++)
+    {
+        if (i == p - 1)
+        {
+            temp->next = temp->next->next;
+            return;
+        }
+        temp = temp->next;
+    }
+}
+
+void display_rev(struct node *temp)
+{
+    if (temp == NULL)
+    {
+        printf("\nThe list in reverse is: NULL");
+        return;
+    }
+    display_rev(temp->next);
+    printf(" <- %d", temp->val);
 }
