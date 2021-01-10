@@ -4,7 +4,7 @@
 typedef struct node
 {
     int val;
-    struct node *next;
+    struct node *prev, *next;
 } node;
 
 void main()
@@ -14,11 +14,11 @@ void main()
     node *last = NULL;
     node *create_node(int);
     void create_list(node **, node **);
-    void display_list(node *);
+    void fwd_display(node *);
+    void bkd_display(node *);
     void add_after(node *, node **);
-    void add_before(node **, node **);
+    void add_before(node **);
     void del_node_val(node **, node **);
-    void josephus_prob(node *);
 
     while (1)
     {
@@ -26,10 +26,10 @@ void main()
         printf("\n0 to exit");
         printf("\n1 to create the list");
         printf("\n2 to display the list");
-        printf("\n3 to add node after a specific node");
-        printf("\n4 to add node before a specific node");
-        printf("\n5 to delete a node with specific value");
-        printf("\n6 to Compute Josephus' Problem\n");
+        printf("\n3 to reverse display the list");
+        printf("\n4 to add node after a specific node");
+        printf("\n5 to add node before a specific node");
+        printf("\n6 to delete a node with specific value\n");
 
         scanf("%d", &choice);
 
@@ -44,23 +44,23 @@ void main()
             break;
 
         case 2:
-            display_list(head);
+            fwd_display(head);
             break;
 
         case 3:
-            add_after(head, &last);
+            bkd_display(last);
             break;
 
         case 4:
-            add_before(&head, &last);
+            add_after(head, &last);
             break;
 
         case 5:
-            del_node_val(&head, &last);
+            add_before(&head);
             break;
 
         case 6:
-            josephus_prob(head);
+            del_node_val(&head, &last);
             break;
 
         default:
@@ -89,33 +89,41 @@ void create_list(node **head, node **last)
         scanf("%d", &v);
         node *temp;
         temp = create_node(v);
+        temp->next = NULL;
         if (*head == NULL)
         {
-            temp->next = temp;
+            temp->prev = NULL;
             *head = temp;
         }
         else
         {
-            temp->next = *head;
             (*last)->next = temp;
+            temp->prev = *last;
         }
         *last = temp;
     }
 }
 
-void display_list(node *head)
+void fwd_display(node *head)
 {
     node *temp;
     printf("\nThe current list is: ");
-    for (temp = head;; temp = temp->next)
+    for (temp = head; temp != NULL; temp = temp->next)
     {
         printf("%d -> ", temp->val);
-        if (temp->next == head)
-        {
-            break;
-        }
     }
     printf("NULL\n");
+}
+
+void bkd_display(node *last)
+{
+    node *temp;
+    printf("\nThe current list is: \nNULL");
+    for (temp = last; temp != NULL; temp = temp->prev)
+    {
+        printf(" <- %d", temp->val);
+    }
+    printf("\n");
 }
 
 void add_after(node *head, node **last)
@@ -129,7 +137,8 @@ void add_after(node *head, node **last)
     new = create_node(v);
     if ((*last)->val == x)
     {
-        new->next = (*last)->next;
+        new->next = NULL;
+        new->prev = *last;
         (*last)->next = new;
         *last = new;
         return;
@@ -139,14 +148,14 @@ void add_after(node *head, node **last)
         if (temp->val == x)
         {
             new->next = temp->next;
+            temp->next->prev = new;
             temp->next = new;
-            return;
+            new->prev = temp;
         }
     }
-    printf("Element not found.");
 }
 
-void add_before(node **head, node **last)
+void add_before(node **head)
 {
     int v, x;
     node *temp, *new;
@@ -157,17 +166,20 @@ void add_before(node **head, node **last)
     new = create_node(v);
     if ((*head)->val == x)
     {
+        new->prev = NULL;
         new->next = *head;
+        (*head)->prev = new;
         *head = new;
-        (*last)->next = *head;
         return;
     }
-    for (temp = *head; temp->next != NULL; temp = temp->next)
+    for (temp = *head; temp != NULL; temp = temp->next)
     {
-        if (temp->next->val == x)
+        if (temp->val == x)
         {
-            new->next = temp->next;
-            temp->next = new;
+            temp->prev->next = new;
+            new->prev = temp->prev;
+            temp->prev = new;
+            new->next = temp;
             return;
         }
     }
@@ -182,31 +194,22 @@ void del_node_val(node **head, node **last)
     scanf("%d", &x);
     if ((*head)->val == x)
     {
-        (*last)->next = (*head)->next;
+        (*head)->next->prev = NULL;
         *head = (*head)->next;
+        return;
     }
-    for (temp = *head; temp->next != *last; temp = temp->next)
+    for (temp = *head; temp != *last; temp = temp->next)
     {
-        if (temp->next->val == x)
+        if (temp->val == x)
         {
-            temp->next = temp->next->next;
+            temp->prev->next = temp->next;
+            temp->next->prev = temp->prev;
             return;
         }
     }
     if ((*last)->val == x)
     {
-        temp->next = (*last)->next;
-        *last = temp;
+        (*last)->prev->next = NULL;
+        *last = (*last)->prev;
     }
-}
-
-void josephus_prob(node *head)
-{
-    node *temp;
-    for (temp = head; temp->next != temp; temp = temp->next)
-    {
-        temp->next = temp->next->next;
-    }
-    printf("The remaining value is: %d", temp->val);
-    exit(0);
 }
