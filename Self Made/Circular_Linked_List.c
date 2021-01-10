@@ -17,8 +17,8 @@ void main()
     void display_list(node *);
     void add_after(node *, node **);
     void add_before(node **, node **);
-    // void del_node_val();
-    // void del_node_pos();
+    void del_node_val(node **, node **);
+    void josephus_prob(node *);
 
     while (1)
     {
@@ -55,13 +55,13 @@ void main()
             add_before(&head, &last);
             break;
 
-            // case 5:
-            //     del_node_val();
-            //     break;
+        case 5:
+            del_node_val(&head, &last);
+            break;
 
-            // case 6:
-            //     del_node_pos();
-            //     break;
+        case 6:
+            josephus_prob(head);
+            break;
 
         default:
             printf("Sorry fam try again");
@@ -172,4 +172,41 @@ void add_before(node **head, node **last)
         }
     }
     printf("Element not found.");
+}
+
+void del_node_val(node **head, node **last)
+{
+    int x;
+    struct node *temp;
+    printf("Enter the value of the node to be deleted: ");
+    scanf("%d", &x);
+    if ((*head)->val == x)
+    {
+        (*last)->next = (*head)->next;
+        *head = (*head)->next;
+    }
+    for (temp = *head; temp->next != *last; temp = temp->next)
+    {
+        if (temp->next->val == x)
+        {
+            temp->next = temp->next->next;
+            return;
+        }
+    }
+    if ((*last)->val == x)
+    {
+        temp->next = (*last)->next;
+        *last = temp;
+    }
+}
+
+void josephus_prob(node *head)
+{
+    node *temp;
+    for (temp = head; temp->next != temp; temp = temp->next)
+    {
+        temp->next = temp->next->next;
+    }
+    printf("The remaining value is: %d", temp->val);
+    exit(0);
 }
